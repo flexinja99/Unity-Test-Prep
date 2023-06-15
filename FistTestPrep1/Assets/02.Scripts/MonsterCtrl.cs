@@ -31,6 +31,12 @@ public class MonsterCtrl : MonoBehaviour
     private readonly int hashAttack = Animator.StringToHash("IsAttack");
     private readonly int hashHit = Animator.StringToHash("Hit");
 
+    // 혈흔 효과 프리팹
+    private GameObject bloodEffect;
+
+    private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
+    private readonly int hashSpeed = Animator.StringToHash("Speed");
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,6 +53,19 @@ public class MonsterCtrl : MonoBehaviour
         StartCoroutine(CheckMonsterState());
         // 상태에 따라 몬스터의 행동을 수행하는 코루틴 함수 호출
         StartCoroutine(MonsterAction());
+
+        // BloodSprayEffect 프리팹 로드
+        bloodEffect = Resources.Load<GameObject>("BloodSprayEffect");
+    }
+
+    void OnPlayerDie()
+    {
+        // 몬스터의 상태를 체크하는 코루틴 함수를 모두 정지시킴
+        StopAllCoroutines();
+        // 추적을 정지하고 애니메이션을 수행
+        agent.isStopped = true;
+        anim.SetFloat(hashSpeed, Random.Range(0.8f, 1.2f)); // 스피드를 위해서 추가해야 하는 코드
+        anim.SetTrigger(hashPlayerDie);
     }
 
     void OnCollisionEnter(Collision coll)
@@ -59,9 +78,16 @@ public class MonsterCtrl : MonoBehaviour
             // 피격 리액션 애니메이션 실행
             anim.SetTrigger(hashHit);
         }
+
+        // 총알의 충돌 지점
+        Vector3 pos = coll.GetContact(0).point;
+        // 총알의 충돌 지점의 법선 벡터
+        Quaternion rot = Quaternion.LookRotation(-coll.GetContact(0).normal);
+        // 혈흔 효과를 생성하는 함수 호출
+        ShowBloodEffect(pos, rot);
     }
-            // 일정한 간격으로 몬스터의 행동 상태를 체크
-            IEnumerator CheckMonsterState()
+    // 일정한 간격으로 몬스터의 행동 상태를 체크
+    IEnumerator CheckMonsterState()
     {
         while (!isDie)
         {
@@ -85,7 +111,10 @@ public class MonsterCtrl : MonoBehaviour
             {
                 state = State.IDLE;
             }
+            
         }
+
+
     }
     // 몬스터의 상태에 따라 몬스터의 동작을 수행
     IEnumerator MonsterAction()
@@ -137,6 +166,13 @@ public class MonsterCtrl : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, attackDist);
         }
+    }
+
+    void ShowBloodEffect(Vector3 pos, Quaternion rot)
+    {
+        // 혈흔 효과 생성
+        GameObject blood = Instantiate<GameObject>(bloodEffect, pos, rot, monsterTr);
+        Destroy(blood, 1.0f);
     }
 }
         
