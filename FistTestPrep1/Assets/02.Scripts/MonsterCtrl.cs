@@ -36,9 +36,8 @@ public class MonsterCtrl : MonoBehaviour
 
     private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
     private readonly int hashSpeed = Animator.StringToHash("Speed");
-
-    // Start is called before the first frame update
-    void Start()
+   
+    void Awake()
     {
         anim = GetComponent<Animator>();
         // 몬스터의 Transform 할당
