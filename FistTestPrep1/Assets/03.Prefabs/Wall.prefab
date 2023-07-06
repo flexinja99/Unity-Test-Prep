@@ -18,7 +18,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!4 &1390179327245606905
 Transform:
@@ -110,3 +110,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77b2e69e08a1ed24ead15f6745d34f6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sparkEffect: {fileID: 0}

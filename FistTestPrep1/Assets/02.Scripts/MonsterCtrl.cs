@@ -33,7 +33,7 @@ public class MonsterCtrl : MonoBehaviour
 
     // 혈흔 효과 프리팹
     private GameObject bloodEffect;
-
+    private int hp;
     private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
     private readonly int hashSpeed = Animator.StringToHash("Speed");
    
@@ -53,8 +53,17 @@ public class MonsterCtrl : MonoBehaviour
         // 상태에 따라 몬스터의 행동을 수행하는 코루틴 함수 호출
         StartCoroutine(MonsterAction());
 
+        agent.updateRotation = false;
+
+
+
         // BloodSprayEffect 프리팹 로드
         bloodEffect = Resources.Load<GameObject>("BloodSprayEffect");
+    }
+
+    private void Update()
+    {
+        
     }
 
     void OnPlayerDie()
@@ -172,6 +181,22 @@ public class MonsterCtrl : MonoBehaviour
         // 혈흔 효과 생성
         GameObject blood = Instantiate<GameObject>(bloodEffect, pos, rot, monsterTr);
         Destroy(blood, 1.0f);
+    }
+    public void OnDamage(Vector3 pos, Vector3 normal)
+    {
+        // 피격 리액션 애니메이션 실행
+        anim.SetTrigger(hashHit);
+        Quaternion rot = Quaternion.LookRotation(normal);
+        // 혈흔 효과를 생성하는 함수 호출
+        ShowBloodEffect(pos, rot);
+        // 몬스터의 hp 차감
+        hp -= 30;
+        if (hp <= 0)
+        {
+            state = State.DIE;
+            // 몬스터가 사망했을 때 50점을 추가
+            GameManager.instance.DisplayScore(50);
+        }
     }
 }
         
